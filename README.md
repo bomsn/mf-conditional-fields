@@ -219,3 +219,22 @@ _________________________________________
       <script>
         mfConditionalFields('#example_form', 'block');
       </script>
+
+_________________________________________
+## Usage With Dynamic Forms
+To use dynamic forms functionality, you must use **inline based rules** and initiaize the form like this
+
+    mfConditionalFields('#example_form', 'inline', true);
+
+Then, you must trigger the event `mfConditionalFormUpdated` each time you add or remove fields. After you do that, the script will implement conditional logic to any new conditional fields in form. ( change the value `add` to `remove` if a field is remove )
+
+    let mfEvent = new CustomEvent("mfConditionalFormUpdated", { "detail": { "action": "add" } });
+    document.getElementById('example_form').dispatchEvent(mfEvent);
+
+_____________________________________________
+
+### Have an issue or suggestion?
+Feel free to share any issues or feature requests by creating an [issue](https://github.com/bomsn/mf-conditional-fields/issues)
+
+### Want to contribute?
+Fork, change, send pull request!
