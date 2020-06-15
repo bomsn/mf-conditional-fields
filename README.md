@@ -2,7 +2,7 @@
 
 A JavaScript library that show/hide form elements based on the value of one field or many.
 
-![MF Conditional Fields](/bomsn/mf-conditional-fields/images/mf-conditional-rules.gif)
+![MF Conditional Fields](/images/mf-conditional-rules.gif)
 
 **Advantages**
 - Lightweight & fast.
