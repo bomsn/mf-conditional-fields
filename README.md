@@ -8,19 +8,19 @@ A JavaScript library that show/hide form elements based on the value of one fiel
 - Lightweight & fast.
 - Comes with a number of different operators.
 - Supports complex conditional rules.
-- Supports dynamic forms ( forms that are updated with new elements after the dom is loaded ).
+- Supports dynamic forms ( forms that are updated with new elements after the DOM is loaded ).
 - Supports all form elements regardless of their type ( input, select..etc ).
 
 **Disadvantages**
-- JSON based and large conditions, which makes writing rules a bit fraustrating. However, you can always write you own helpers to create rules faster ( See jQuery and PHP usage for examples )
+- JSON based and large conditions, which makes writing rules a bit frustrating. However, you can always write you own helpers to create rules faster ( See jQuery and PHP usage for examples )
 
 ## When To Use
 
 This library is best suited for complex conditions and dynamically generated fields. Field conditions are written in JSON format and it can be hard to generate these manually.
 
-If you plan on using this for your PHP project, make sure to check out the **[PHP Usage](#php-usage--inline--based-rules-)** section below.
+If you plan on using this for your PHP project, make sure to check out the **[PHP Usage](#php-usage--inline-based-rules-)** section below.
 
-If you want to use jQuery, you'll need to write your own function or plugin to supply your rules as **array of object** to `mfConditionalFields( '.formSelecotr', rulesArray )`. ( see **[Block condition format](#block-based-rules)** section for the correct format )
+If you want to use jQuery, you'll need to write your own function or plugin to supply your rules as **array of object** to `mfConditionalFields( '.formSelecotr', rulesArray )`. ( see **[Block based rules](#block-based-rules)** section for the correct format )
 
 ## How To Use
 
