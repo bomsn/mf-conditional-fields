@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>MF Conditional Fields</title>
+</head>
+
+<body>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+  <div class="container" style="padding-top:50px; padding-bottom:50px;">
+    <form id="example_form">
+      <h3 class="mb-5">Basic Example</h3>
+      <div class="form-group">
+        <label for="field1">Parent Field</label> <input type="checkbox" name="parent_field" id="field1" value="yes">
+        <div>
+
+
+          <div class="form-group" style="display: none;">
+            <label for="field2">Dependant Field</label><br>
+            <input type="text" name="dependant_field" id="field2">
+          </div>
+
+
+          <div class="alert alert-primary" role="alert" style="">
+            Please check the checkbox above!
+            <input type="hidden" name="dependant_container">
+          </div>
+
+          <div class="dropdown-divider"></div>
+          <h3 class="mb-5">Multiple Rules Example</h3>
+          <div class="form-group">
+            <input type="radio" id="male" name="gender" value="male">
+            <label for="male">Male</label><br>
+            <input type="radio" id="female" name="gender" value="female">
+            <label for="female">Female</label><br>
+            <input type="radio" id="other" name="gender" value="other">
+            <label for="other">Other</label>
+          </div>
+
+          <div class="alert alert-primary" role="alert" style="display: none;">
+            This alert is attached to 'male' and 'female' options.
+            <input type="hidden" name="dependant_container2">
+          </div>
+
+          <div class="form-group" role="alert" style="">
+            <label for="field1">Type your gender:</label>
+            <input type="text" name="dependant_field2">
+          </div>
+          <div class="dropdown-divider"></div>
+
+
+          <button type="submit" class="btn btn-primary">Submit</button>
+
+
+        </div>
+        <script src="../src/mf-conditional-fields.js"></script>
+        <script type="text/x-rules" id="rules-mf-conditional-fields">
+        [
+           {
+              "field":"dependant_field",
+              "container":".form-group",
+              "action":"show",
+              "logic":"or",
+              "rules":{
+                 "name":"parent_field",
+                 "operator":"is",
+                 "value":"yes"
+              }
+           },
+           {
+              "field":"dependant_container",
+              "container":".alert-primary",
+              "action":"hide",
+              "logic":"or",
+              "rules":{
+                 "name":"parent_field",
+                 "operator":"is",
+                 "value":"yes"
+              }
+           },
+           {
+              "field":"dependant_container2",
+              "container":".alert-primary",
+              "action":"show",
+              "logic":"or",
+              "rules":[
+                 {
+                    "name":"gender",
+                    "operator":"is",
+                    "value":"male"
+                 },
+                 {
+                    "name":"gender",
+                    "operator":"is",
+                    "value":"female"
+                 }
+              ]
+           },
+           {
+              "field":"dependant_field2",
+              "container":".form-group",
+              "action":"show",
+              "logic":"or",
+              "rules":{
+                 "name":"gender",
+                 "operator":"is",
+                 "value":"other"
+              }
+           }
+        ]
+        </script>
+        <script>
+          mfConditionalFields('#example_form', 'block');
+        </script>
+
+
+      </div>
+    </form>
+  </div>
+</body>
+
+</html>
