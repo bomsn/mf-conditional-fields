@@ -18,19 +18,19 @@ A JavaScript library that show/hide form elements based on the value of one fiel
 
 This library is best suited for complex conditions and dynamically generated fields. Field conditions are written in JSON format and it can be hard to generate these manually.
 
-If you plan on using this for your PHP project, make sure to check out the **PHP Usage** section below.
+If you plan on using this for your PHP project, make sure to check out the **[PHP Usage](#php-usage--inline--based-rules-)** section below.
 
-If you want to use jQuery, you'll need to write your own function or plugin to supply your rules as **array of object** to `mfConditionalFields( '.formSelecotr', rulesArray )`. ( see **Block Condition Format** section for the correct format )
+If you want to use jQuery, you'll need to write your own function or plugin to supply your rules as **array of object** to `mfConditionalFields( '.formSelecotr', rulesArray )`. ( see **[Block condition format](#block-based-rules)** section for the correct format )
 
 ## How To Use
 
 1. Load `src/mf-conditional-fields.js`.
-2. Add your JSON formatted conditions inside a JS template or to the field you want to show/hide inside a `data-conditional-rules` attribute.
+2. Add your JSON formatted conditions inside a [JS element](#plain-html-usage--block-based-rules-) or to the field you want to show/hide inside a `data-conditional-rules` attribute.
 3. Call `mfConditionalFields('form')`  *(replace `form` with your form selector)*
 
 4. Let the magic happen
 
-### Inline Condition Format
+### Inline Based Rules
 
     {
        "container":".element-to-show-hide",
@@ -45,7 +45,7 @@ If you want to use jQuery, you'll need to write your own function or plugin to s
        ]
     }
 
-### Block Condition Format
+### Block Based Rules
     [
         {
            "field":"field1_name",
@@ -76,7 +76,7 @@ If you want to use jQuery, you'll need to write your own function or plugin to s
     ]
 
 ### Field
-The name attribute of the field you want to show/hide based on the provided rules. Note that this can only be used in the **block based rules**, **inline based rules** don't require this. ( if you are not fimiliar with the bold terms, please keep reading )
+The name attribute of the field you want to show/hide based on the provided rules. Note that this can only be used in the **block based rules**, **inline based rules** don't require this. ( if the bold terms don't make sense yet, please keep reading )
 
 ### Container
 The conditional field parent element where you want to perform the hiding/showing action, leave empty to show/hide the field itself.
@@ -118,7 +118,7 @@ The parent field value we should be watching for to perform the action, this can
 _________________________________________
 ## Usage
 
-### PHP Usage ( Inline Rules )
+### PHP Usage ( Inline Based Rules )
 - Create a helper function
 
       function get_mf_conditional_rules( $action, $rules, $logic = 'or', $container = '.default-field-container' ) {
@@ -131,7 +131,7 @@ _________________________________________
               ));
       }
 
-- Create your form and give it an id or class to use for initilizations
+- Create your form and give it an id or class to use for initialization
 
         ?>
             <form id="example_form">
