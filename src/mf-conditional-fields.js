@@ -10,12 +10,12 @@
  *
  */
 "use strict";
-const mfConditionalFields = ( forms, theRules = 'inline', isDynamic = false ) => {
+const mfConditionalFields = (forms, theRules = 'inline', isDynamic = false) => {
 
 	forms = typeof forms == "string" ? document.querySelectorAll(forms) : forms;
 	let fields = [], // To hold all available conditional fields
-			triggers = [], // To hold every trigger field
-			triggersListening = []; // To hold every trigger that has an eventlistener attached to it;
+		triggers = [], // To hold every trigger field
+		triggersListening = []; // To hold every trigger that has an eventlistener attached to it;
 
 	let self = {
 		/**
@@ -26,33 +26,32 @@ const mfConditionalFields = ( forms, theRules = 'inline', isDynamic = false ) =>
 		 * @param field The field object
 		 * @param formIndex Form index of the
 		 */
-		initField : ( field, formIndex ) => {
+		initField: (field, formIndex) => {
 
-      let condition = field.getAttribute('data-conditional-rules');
+			let condition = field.getAttribute('data-conditional-rules');
 
-			if( condition.length > 0 ){
-        condition = JSON.parse( condition );
+			if (condition.length > 0) {
+				condition = JSON.parse(condition);
 				let container = 'container' in condition ? condition['container'] : '',
-						action = 'action' in condition ? condition['action'] : 'show',
-						logic = 'logic' in condition ? condition['logic'] : 'or',
-						rules = 'rules' in condition ? condition['rules'] : [];
+					action = 'action' in condition ? condition['action'] : 'show',
+					logic = 'logic' in condition ? condition['logic'] : 'or',
+					rules = 'rules' in condition ? condition['rules'] : [];
 
-        // if a single rule is provided, insert it into an array
-        if( typeof rules == "object" && typeof rules.length == "undefined" ){
-          rules = [rules];
-        }
+				// if a single rule is provided, insert it into an array
+				if (typeof rules == "object" && typeof rules.length == "undefined") {
+					rules = [rules];
+				}
 
-        // If rules are available, start a loop to implement each rule
-				if( rules.length > 0 ){
-					for( let i = 0; rules.length > i; i++ ){
-						if( triggers[formIndex].includes(rules[i].name ) === false) {
-              console.log(rules[i].name);
+				// If rules are available, start a loop to implement each rule
+				if (rules.length > 0) {
+					for (let i = 0; rules.length > i; i++) {
+						if (triggers[formIndex].includes(rules[i].name) === false) {
 							triggers[formIndex].push(rules[i].name);
 						}
 					}
 
 
-          field.removeAttribute('data-conditional-rules');
+					field.removeAttribute('data-conditional-rules');
 
 					field.mfConditionalContainerSelector = container;
 					field.mfConditionalAction = action;
@@ -72,57 +71,57 @@ const mfConditionalFields = ( forms, theRules = 'inline', isDynamic = false ) =>
 		 *
 		 * @param field The field object
 		 */
-		updateField: ( field ) => {
+		updateField: (field) => {
 
 			let formIndex = field.mfConditionalFormIndex,
-					action = field.mfConditionalAction,
-					logic = field.mfConditionalLogic,
-					rules = field.mfConditionalRules,
-					isConditionMet = false;
+				action = field.mfConditionalAction,
+				logic = field.mfConditionalLogic,
+				rules = field.mfConditionalRules,
+				isConditionMet = false;
 
-			if( rules.length > 0 ){
+			if (rules.length > 0) {
 
-				for( let i = 0; rules.length > i; i++ ){
+				for (let i = 0; rules.length > i; i++) {
 					let rule = rules[i],
-							name = rule.name,
-							operator = rule.operator,
-							value = rule.value;
+						name = rule.name,
+						operator = rule.operator,
+						value = rule.value;
 
-					if ( triggers[formIndex].includes(name) ) {
+					if (triggers[formIndex].includes(name)) {
 
-						let trigger = forms[formIndex].querySelectorAll( '[name="' + name + '"]' ),
-								triggerType, triggerValue, isRuleMet;
+						let trigger = forms[formIndex].querySelectorAll('[name="' + name + '"]'),
+							triggerType, triggerValue, isRuleMet;
 
-						if( trigger.length > 0 ){
+						if (trigger.length > 0) {
 							triggerType = trigger[0].type;
 							// Get the first element and assign it a trigger if it's not a radio or checkbox ( there is a possibility to have same name attribute on these )
-							if( triggerType !== 'radio' && triggerType !== 'checkbox' ){
+							if (triggerType !== 'radio' && triggerType !== 'checkbox') {
 								trigger = trigger[0];
 							}
 							// Get the trigger value(s)
-							if( triggerType == 'radio' || triggerType == 'checkbox' ){
+							if (triggerType == 'radio' || triggerType == 'checkbox') {
 								// Special logic for handling radios and checkboxs since they can have the same name attribute.
 								triggerValue = [];
-								for( let i = 0; i < trigger.length; i++ ) {
-						       if( trigger[i].checked ){
-										 triggerValue.push(trigger[i].value);
-						       }
-									 if ( i === trigger.length - 1 ) {
-				 						triggerValue = triggerValue.join('|');
-				 					}
-						    }
-		          }else{
+								for (let i = 0; i < trigger.length; i++) {
+									if (trigger[i].checked) {
+										triggerValue.push(trigger[i].value);
+									}
+									if (i === trigger.length - 1) {
+										triggerValue = triggerValue.join('|');
+									}
+								}
+							} else {
 								triggerValue = trigger.value;
 							}
 
-							isRuleMet = self.compareValues( operator, triggerValue, value );
+							isRuleMet = self.compareValues(operator, triggerValue, value);
 							isConditionMet = isRuleMet;
 
 							// Compare values and check if the conditions are met
-							if( isRuleMet === false &&  logic == 'and' ){
+							if (isRuleMet === false && logic == 'and') {
 								isConditionMet = false
 								break;
-							}else if( isRuleMet  &&  logic == 'or' ){
+							} else if (isRuleMet && logic == 'or') {
 								isConditionMet = true;
 								break;
 							}
@@ -132,11 +131,11 @@ const mfConditionalFields = ( forms, theRules = 'inline', isDynamic = false ) =>
 
 			}
 			// Toggle the fields based on the value of `isConditionMet`
-			if( isConditionMet ){
-				self.toggleField( field, action );
-			}else{
+			if (isConditionMet) {
+				self.toggleField(field, action);
+			} else {
 				action = action == 'hide' ? 'show' : 'hide';
-				self.toggleField( field, action );
+				self.toggleField(field, action);
 			}
 		},
 		/**
@@ -147,22 +146,22 @@ const mfConditionalFields = ( forms, theRules = 'inline', isDynamic = false ) =>
 		 * @param field The field object
 		 * @param action The action to perform ( show/hide )
 		 */
-		toggleField: ( field, action ) => {
+		toggleField: (field, action) => {
 
 			let formIndex = field.mfConditionalFormIndex,
-					name = field.name,
-          container = field.mfConditionalContainerSelector;
+				name = field.name,
+				container = field.mfConditionalContainerSelector;
 
 			// Check if this field is a trigger and re-evaluate dependant fields recursively
-			if( triggers[formIndex].includes( name ) ){
-				let dependantFields = self.getDependantField( name, formIndex );
+			if (triggers[formIndex].includes(name)) {
+				let dependantFields = self.getDependantField(name, formIndex);
 
-				if( dependantFields.length > 0 ){
-					for( let i = 0; dependantFields.length > i; i++ ){
-						if( action == 'hide' ){
+				if (dependantFields.length > 0) {
+					for (let i = 0; dependantFields.length > i; i++) {
+						if (action == 'hide') {
 							// If we are hiding this field, make sure any conditional field associated are hidden as well
 							self.toggleField(dependantFields[i], 'hide');
-						}else if( action == 'show' ){
+						} else if (action == 'show') {
 							/// If we are showing this field, make sure any conditional field associated are re-evaluated
 							self.updateField(dependantFields[i]);
 						}
@@ -170,21 +169,21 @@ const mfConditionalFields = ( forms, theRules = 'inline', isDynamic = false ) =>
 				}
 			}
 
-			if( action == 'hide' ){
+			if (action == 'hide') {
 				// Hide the field
-        if( container == '' ){
-          field.style.display = "none";
-        }else{
-          field.closest("" + container + "").style.display = "none";
-        }
+				if (container == '') {
+					field.setAttribute("hidden", true);
+				} else {
+					field.closest("" + container + "").setAttribute("hidden", true);
+				}
 
-			}else if( action == 'show' ){
+			} else if (action == 'show') {
 				// Show the field
-        if( container == '' ){
-          field.style.display = "";
-        }else{
-          field.closest("" + container + "").style.display = "";
-        }
+				if (container == '') {
+					field.removeAttribute("hidden");
+				} else {
+					field.closest("" + container + "").removeAttribute("hidden");
+				}
 			}
 
 		},
@@ -194,15 +193,15 @@ const mfConditionalFields = ( forms, theRules = 'inline', isDynamic = false ) =>
 		 * @param name The name attribute of the trigger field
 		 * @param formIndex The index of the form which holds this trigger
 		 */
-		getDependantField: ( name, formIndex ) => {
+		getDependantField: (name, formIndex) => {
 			let dependantFields = [];
 			// Loop through available conditional fields and find any that are using a dependant on a another field based on name attribute of the latter
-			if( typeof fields[formIndex] !== "undefined" ){
-				for( let i = 0; fields[formIndex].length > i; i++ ){
+			if (typeof fields[formIndex] !== "undefined") {
+				for (let i = 0; fields[formIndex].length > i; i++) {
 					// Only update the conditional fields associated with this trigger field
-					if( "mfConditionalRules" in fields[formIndex][i] ){
-						if( typeof ( fields[formIndex][i]["mfConditionalRules"].find( rule => { return rule.name === name }) ) !== "undefined" ){
-							dependantFields.push( fields[formIndex][i] );
+					if ("mfConditionalRules" in fields[formIndex][i]) {
+						if (typeof (fields[formIndex][i]["mfConditionalRules"].find(rule => { return rule.name === name })) !== "undefined") {
+							dependantFields.push(fields[formIndex][i]);
 						}
 					}
 				}
@@ -216,48 +215,36 @@ const mfConditionalFields = ( forms, theRules = 'inline', isDynamic = false ) =>
 		 * @param searchVal the string to compare
 		 * @param targetVal the string to compare against
 		 */
-		compareValues: ( operator, searchVal, targetVal ) => {
+		compareValues: (operator, searchVal, targetVal) => {
 
 			searchVal = searchVal ? searchVal.toString().toLowerCase() : "",
-			targetVal = targetVal ? targetVal.toString().toLowerCase() : "";
+				targetVal = targetVal ? targetVal.toString().toLowerCase() : "";
 
-			switch(operator){
-				case "is" :
+			switch (operator) {
+				case "is":
 					return targetVal === searchVal;
-					break;
-				case "isnot" :
+				case "isnot":
 					return targetVal !== searchVal;
-					break;
-				case "greaterthan" :
-					return isNaN( targetVal ) || isNaN( searchVal ) ? false : Number(targetVal) > Number(searchVal);
-					break;
-				case "lessthan" :
-					return isNaN( targetVal ) || isNaN( searchVal ) ? false : Number(targetVal) < Number(searchVal);
-					break;
-				case "contains" :
+				case "greaterthan":
+					return isNaN(targetVal) || isNaN(searchVal) ? false : Number(targetVal) > Number(searchVal);
+				case "lessthan":
+					return isNaN(targetVal) || isNaN(searchVal) ? false : Number(targetVal) < Number(searchVal);
+				case "contains":
 					return searchVal.includes(targetVal);
-					break;
-				case "doesnotcontain" :
+				case "doesnotcontain":
 					return !searchVal.includes(targetVal);
-					break;
-				case "beginswith" :
+				case "beginswith":
 					return searchVal.startsWith(targetVal);
-					break;
-				case "doesnotbeginwith" :
+				case "doesnotbeginwith":
 					return !searchVal.startsWith(targetVal);
-					break;
-				case "endswith" :
+				case "endswith":
 					return searchVal.endsWith(targetVal);
-					break;
-				case "doesnotendwith" :
+				case "doesnotendwith":
 					return !searchVal.endsWith(targetVal);
-					break;
-				case "isempty" :
+				case "isempty":
 					return searchVal === "";
-					break;
-				case "isnotempty" :
+				case "isnotempty":
 					return searchVal !== "";
-					break;
 			}
 
 			return false;
@@ -269,56 +256,56 @@ const mfConditionalFields = ( forms, theRules = 'inline', isDynamic = false ) =>
 		 *
 		 * @param formIndex The index of the form to update
 		 */
-		updateForm: async ( formIndex, action = 'add' ) => {
+		updateForm: async (formIndex, action = 'add') => {
 
-			if( typeof forms[formIndex] == "undefined" ){
+			if (typeof forms[formIndex] == "undefined") {
 				return false;
 			}
 
-			if( action == 'add' ){
+			if (action == 'add') {
 				try {
 					let step1, step2;
 					// Save any conditional field that are not initiated yet
 					step1 = await new Promise((resolve, reject) => {
-              let newConditionalFields = [];
-              if( theRules == 'inline' ){
-                newConditionalFields = forms[formIndex].querySelectorAll('[data-conditional-rules]');
-              }else{
-                for( let r = 0; theRules.length > r; r++ ){
-                  if( "field" in theRules[r] ){
-                    let theField = forms[formIndex].elements[theRules[r]['field']];
-                    if( typeof theField !== "undefined" ){
-                      delete theRules[r]['field'];
-                      theField.setAttribute("data-conditional-rules", JSON.stringify(theRules[r]));
-                      newConditionalFields.push(theField);
-                    }
-                  }
-  							}
-                // clean `theRules` variable since we'll not need it anymore
-                theRules = null;
-              }
-							// Add the available conditional fields to an array
-							if( newConditionalFields.length > 0 ){
-								fields[formIndex] = fields[formIndex].concat( Array.prototype.slice.call(newConditionalFields) );
-								resolve( newConditionalFields );
-							}else{
-								reject( "No conditional fields found on step 1" );
+						let newConditionalFields = [];
+						if (theRules == 'inline') {
+							newConditionalFields = forms[formIndex].querySelectorAll('[data-conditional-rules]');
+						} else {
+							for (let r = 0; theRules.length > r; r++) {
+								if ("field" in theRules[r]) {
+									let theField = forms[formIndex].elements[theRules[r]['field']];
+									if (typeof theField !== "undefined") {
+										delete theRules[r]['field'];
+										theField.setAttribute("data-conditional-rules", JSON.stringify(theRules[r]));
+										newConditionalFields.push(theField);
+									}
+								}
 							}
+							// clean `theRules` variable since we'll not need it anymore
+							theRules = null;
+						}
+						// Add the available conditional fields to an array
+						if (newConditionalFields.length > 0) {
+							fields[formIndex] = fields[formIndex].concat(Array.prototype.slice.call(newConditionalFields));
+							resolve(newConditionalFields);
+						} else {
+							reject("No conditional fields found on step 1");
+						}
 					});
 					step2 = await new Promise((resolve, reject) => {
-						if( step1.length > 0 ){
+						if (step1.length > 0) {
 							// Loop through each form fields
-							for( let i = 0; step1.length > i; i++ ){
+							for (let i = 0; step1.length > i; i++) {
 
 								self.initField(step1[i], formIndex);
 
 								// Resolve on the last field
-								if ( i === step1.length - 1 ) {
+								if (i === step1.length - 1) {
 									resolve();
 								}
 							}
-						}else{
-							reject( "No conditional fields to initialize on step 2" );
+						} else {
+							reject("No conditional fields to initialize on step 2");
 						}
 					});
 
@@ -326,20 +313,20 @@ const mfConditionalFields = ( forms, theRules = 'inline', isDynamic = false ) =>
 					* After all tasks are finished, add necessary event listeners to the triggers, if available.
 					* triggers are added from `self.initField()`
 					*/
-					if( triggers.length > 0 ){
+					if (triggers.length > 0) {
 						// Loop through each name attributes in the triggrs array for the current form
-						for( let n = 0; triggers[formIndex].length > n; n++ ){
-							if( ! triggersListening[formIndex].includes( triggers[formIndex][n] ) ){
-								let trigger = forms[formIndex].querySelectorAll( '[name="' + triggers[formIndex][n] + '"]' );
-								if( trigger.length > 0 ){
+						for (let n = 0; triggers[formIndex].length > n; n++) {
+							if (!triggersListening[formIndex].includes(triggers[formIndex][n])) {
+								let trigger = forms[formIndex].querySelectorAll('[name="' + triggers[formIndex][n] + '"]');
+								if (trigger.length > 0) {
 									// Loop through the triggers found by querySelectorAll in the current form and assign them a Listener
 									// usually there is only 1 element per name attribute. However, there might be multiple elements with same name, e.g. radios.
-									for( let c = 0; trigger.length > c; c++ ){
+									for (let c = 0; trigger.length > c; c++) {
 										// Assign form index to the element to be used later by the listener to retrieve associated fields
 										trigger[c].mfConditionalFormIndex = formIndex;
 										trigger[c].addEventListener("change", self.fieldListener, false);
 									}
-									triggersListening[formIndex].push( triggers[formIndex][n] );
+									triggersListening[formIndex].push(triggers[formIndex][n]);
 								}
 								// Remove reference to trigger
 								trigger = null;
@@ -349,22 +336,22 @@ const mfConditionalFields = ( forms, theRules = 'inline', isDynamic = false ) =>
 
 					return true;
 
-				} catch( err ) {
-					// let prefix = 'formIndex: ' + formIndex;
-					// if( typeof forms[formIndex].getAttribute('id') !== undefined ){
-					// 	prefix = 'formId: ' + forms[formIndex].getAttribute('id');
-					// }
-					// console.info(`${prefix} => ${err}`);
+				} catch (err) {
+					let prefix = 'formIndex: ' + formIndex;
+					if (typeof forms[formIndex].getAttribute('id') !== undefined) {
+						prefix = 'formId: ' + forms[formIndex].getAttribute('id');
+					}
+					console.info(`${prefix} => ${err}`);
 					return false;
 				}
-			}else if( action == 'remove' ){
+			} else if (action == 'remove') {
 
 				// Clean Fields
-				fields[formIndex] = fields[formIndex].filter( formField => { return typeof( forms[formIndex].elements["" + formField.name + ""] ) !== "undefined" });
+				fields[formIndex] = fields[formIndex].filter(formField => { return typeof (forms[formIndex].elements["" + formField.name + ""]) !== "undefined" });
 				// Clean Triggers
-				triggers[formIndex] = triggers[formIndex].filter( fieldName => { return typeof( forms[formIndex].elements["" + fieldName + ""] ) !== "undefined" });
+				triggers[formIndex] = triggers[formIndex].filter(fieldName => { return typeof (forms[formIndex].elements["" + fieldName + ""]) !== "undefined" });
 				// Clean Triggers Listening
-				triggersListening[formIndex] = triggersListening[formIndex].filter( fieldName => { return typeof( forms[formIndex].elements["" + fieldName + ""] ) !== "undefined" });
+				triggersListening[formIndex] = triggersListening[formIndex].filter(fieldName => { return typeof (forms[formIndex].elements["" + fieldName + ""]) !== "undefined" });
 
 				return true;
 			}
@@ -377,12 +364,12 @@ const mfConditionalFields = ( forms, theRules = 'inline', isDynamic = false ) =>
 		 *
 		 * @param e The event object
 		 */
-		fieldListener: ( e ) => {
+		fieldListener: (e) => {
 
-			let dependantFields = self.getDependantField( e.target.name, e.target.mfConditionalFormIndex );
+			let dependantFields = self.getDependantField(e.target.name, e.target.mfConditionalFormIndex);
 
-			if( dependantFields.length > 0 ){
-				for( let i = 0; dependantFields.length > i; i++ ){
+			if (dependantFields.length > 0) {
+				for (let i = 0; dependantFields.length > i; i++) {
 					self.updateField(dependantFields[i]);
 				}
 			}
@@ -392,11 +379,11 @@ const mfConditionalFields = ( forms, theRules = 'inline', isDynamic = false ) =>
 		 *
 		 * @param e The event object
 		 */
-		formListener: ( e ) => {
+		formListener: (e) => {
 			let formIndex = e.target.mfConditionalFormIndex,
-					action = e.detail.action;
+				action = e.detail.action;
 
-			self.updateForm( formIndex, action );
+			self.updateForm(formIndex, action);
 		}
 	};
 
@@ -405,51 +392,55 @@ const mfConditionalFields = ( forms, theRules = 'inline', isDynamic = false ) =>
 	/**
 	 * Validate the supplied rules or rule type
 	 */
-  if( theRules == 'block' ){
-    let blockRules = document.getElementById('rules-mf-conditional-fields');
+	if (theRules == 'block') {
+		let blockRules = document.getElementById('rules-mf-conditional-fields');
 
-    if( typeof blockRules !== undefined ){
-      theRules = JSON.parse(blockRules.innerHTML);
-    }else{
-      console.warn( `The rules element could not be found.` );
-      return false;
-    }
-  }
+		if (typeof blockRules !== undefined) {
+			theRules = JSON.parse(blockRules.innerHTML);
+		} else {
+			console.warn(`The rules element could not be found.`);
+			return false;
+		}
+	}
 
-  if( theRules !== 'inline' && typeof theRules !== "object" ){
-    console.warn( `The supplied rules or rule type is not valid.` );
-    return false;
-  }
+	if (theRules !== 'inline' && typeof theRules !== "object") {
+		console.warn(`The supplied rules or rule type is not valid.`);
+		return false;
+	}
 
 	/**
 	 * Run conditional logic processes if the form(s) is available
 	 */
-	if( forms.length > 0 ){
+	if (forms.length > 0) {
 		// Loop through available forms and initialize conditional logic
-		for( let i = 0; forms.length > i; i++ ){
+		for (let i = 0; forms.length > i; i++) {
 
-			fields.push( [] ); // Add an empty array to  `field` to represent current form ( New fields can be added later if this is a dynamic form )
-			triggers.push( [] ); // Add an empty array to  `triggers` to represent current form ( triggers to be added at a later stage if conditional fields are available or dynamically added )
-			triggersListening.push( [] ); // Add an empty array to  `triggersListening` to represent current form ( triggerListening to be added at a later stage if conditional fields are available or dynamically added )
+			fields.push([]); // Add an empty array to  `field` to represent current form ( New fields can be added later if this is a dynamic form )
+			triggers.push([]); // Add an empty array to  `triggers` to represent current form ( triggers to be added at a later stage if conditional fields are available or dynamically added )
+			triggersListening.push([]); // Add an empty array to  `triggersListening` to represent current form ( triggerListening to be added at a later stage if conditional fields are available or dynamically added )
 			forms[i].mfConditionalFormIndex = i; // assign the conditional form index to the form element ( Used to manage conditional logic for multiple forms   )
-			self.updateForm( i );
+			self.updateForm(i);
 
 		}
 
 		/*
 		* If the form(s) is dynmaic, add necessary event listeners to the form(s) element(s)
 		*/
-		if( isDynamic ){
+		if (isDynamic) {
 			// Loop through the forms and add event listener ( mfConditionalFormUpdated needs to be created, then dispatched each time the form is updated with new fields )
-			for( let e = 0; forms.length > e; e++ ){
+			for (let e = 0; forms.length > e; e++) {
 				forms[e].addEventListener("mfConditionalFormUpdated", self.formListener, false);
 			}
 		}
 
-	}else{
-    console.warn( `The supplied conditional form was not found` );
+	} else {
+		console.warn(`The supplied conditional form was not found`);
 		return false;
-  }
-};
-// Set megaForms as a browser global
-window.mfConditionalFields = mfConditionalFields;
+	}
+}
+
+if (typeof (window) !== 'undefined') {
+	// Set megaForms as a browser global
+	window.mfConditionalFields = mfConditionalFields;
+
+}
