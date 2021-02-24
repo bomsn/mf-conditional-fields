@@ -35,7 +35,7 @@ If you want to use jQuery, you'll need to write your own function or plugin to s
 To give you more control over the conditional elements, `mfConditionalFields` offers a set of options that you can specify to change how the library interacts with conditional elements. The options can used like this:
 
     mfConditionalFields('form', {
-      rules: 'inline', // accepts `inline`, `block` and array of object ( see below for examples ).
+      rules: 'inline', // accepts `inline`, `block` and array of objects ( see below for examples ).
       dynamic: false, // If set to `true` the library will handle elements added after the DOM is loaded ( see below for examples ).
       unsetHidden: false, // If set to `true` the library will unset the value of any hidden fields.
       disableHidden: false, // If set to `true`, any hidden fields will be set to `disabled`.
