@@ -15,10 +15,10 @@ const mfConditionalFields = (forms, options = {}) => {
 	forms = typeof forms == "string" ? document.querySelectorAll(forms) : forms;
 
 
-	let theRules = options.rules ?? 'inline',
-		isDynamic = options.dynamic ?? false,
-		unsetHidden = options.unsetHidden ?? false,
-		disableHidden = options.disableHidden ?? false,
+	let theRules = options.rules || 'inline',
+		isDynamic = options.dynamic || false,
+		unsetHidden = options.unsetHidden || false,
+		disableHidden = options.disableHidden || false,
 		fields = [], // To hold all available conditional fields
 		triggers = [], // To hold every trigger field
 		triggersListening = []; // To hold every trigger that has an eventlistener attached to it;
