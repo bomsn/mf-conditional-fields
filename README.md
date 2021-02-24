@@ -20,7 +20,7 @@ This library is best suited for complex conditions and dynamically generated fie
 
 If you plan on using this for your PHP project, make sure to check out the **[PHP Usage](#php-usage--inline-based-rules-)** section below.
 
-If you want to use jQuery, you'll need to write your own function or plugin to supply your rules as **array of object** to `mfConditionalFields( '.formSelecotr', rulesArray )`. ( see **[Block based rules](#block-based-rules)** section for the correct format )
+If you want to use jQuery, you'll need to write your own function or plugin to supply your rules as **array of object** to `mfConditionalFields( '.formSelecotr', {rules: rulesArray} )`. ( see **[Block based rules](#block-based-rules)** section for the correct format )
 
 ## How To Use
 
@@ -29,6 +29,17 @@ If you want to use jQuery, you'll need to write your own function or plugin to s
 3. Call `mfConditionalFields('form')`  *(replace `form` with your form selector)*
 
 4. Let the magic happen
+
+### Available Options
+
+To give you more control over the conditional elements, `mfConditionalFields` offers a set of options that you can specify to change how the library interacts with conditional elements. The options can used like this:
+
+mfConditionalFields('form', {
+  rules: 'inline', // accepts `inline`, `block` and array of object ( see below for examples ).
+  dynamic: false, // If set to `true` the library will handle elements added after the DOM is loaded ( see below for examples ).
+  unsetHidden: false, // If set to `true` the library will unset the value of any hidden fields.
+  disableHidden: false, // If set to `true`, any hidden fields will be set to `disabled`.
+});
 
 ### Inline Based Rules
 
@@ -183,7 +194,7 @@ _________________________________________
             <input type="checkbox" name="parent_field" id="field1" value="yes"/>
         <div>
 
-- Create you conditional field  (**dependant field**)
+- Create your conditional field  (**dependant field**)
 
         <div class="form-group">
           <label for="field2">Dependant Field</label><br>
@@ -213,18 +224,21 @@ _________________________________________
         ]
 
 
-- Load the library and Initialize conditional fields ( make sure to add `block` as a second arguement when calling `mfConditionalFields` )
+- Load the library and Initialize conditional fields ( make sure to pass an object with `rules` property set to `block` as a second arguement when calling `mfConditionalFields` )
 
       <script src="../src/mf-conditional-fields.js"></script>
       <script>
-        mfConditionalFields('#example_form', 'block');
+        mfConditionalFields('#example_form', {rules: 'block'});
       </script>
 
 _________________________________________
 ## Usage With Dynamic Forms
 To use dynamic forms functionality, you must use **inline based rules** and initiaize the form like this
 
-    mfConditionalFields('#example_form', 'inline', true);
+    mfConditionalFields('#example_form', {
+      rules: 'inline', 
+      dynamic: true
+      });
 
 Then, you must trigger the event `mfConditionalFormUpdated` each time you add or remove fields. After you do that, the script will implement conditional logic to any new conditional fields in form. ( change the value `add` to `remove` if a field is remove )
 

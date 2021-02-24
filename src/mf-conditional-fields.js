@@ -10,10 +10,16 @@
  *
  */
 "use strict";
-const mfConditionalFields = (forms, theRules = 'inline', isDynamic = false) => {
+const mfConditionalFields = (forms, options = {}) => {
 
 	forms = typeof forms == "string" ? document.querySelectorAll(forms) : forms;
-	let fields = [], // To hold all available conditional fields
+
+
+	let theRules = options.rules ?? 'inline',
+		isDynamic = options.dynamic ?? false,
+		unsetHidden = options.unsetHidden ?? false,
+		disableHidden = options.disableHidden ?? false,
+		fields = [], // To hold all available conditional fields
 		triggers = [], // To hold every trigger field
 		triggersListening = []; // To hold every trigger that has an eventlistener attached to it;
 
@@ -177,12 +183,27 @@ const mfConditionalFields = (forms, theRules = 'inline', isDynamic = false) => {
 					field.closest("" + container + "").setAttribute("hidden", true);
 				}
 
+				if( disableHidden ){
+					field.setAttribute("disabled", "disabled");
+				}
+				if( unsetHidden ){
+					if( 'checkbox' == field.type || 'radio' == field.type ){
+						field.checked = false;
+					}else{
+						field.value = '';
+					}
+				}
+
 			} else if (action == 'show') {
 				// Show the field
 				if (container == '') {
 					field.removeAttribute("hidden");
 				} else {
 					field.closest("" + container + "").removeAttribute("hidden");
+				}
+
+				if( disableHidden ){
+					field.removeAttribute("disabled");
 				}
 			}
 
