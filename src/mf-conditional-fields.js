@@ -10,7 +10,7 @@
  *
  */
 "use strict";
-const mfConditionalFields = (forms, theRules = 'inline', isDynamic = false) => {
+const mfConditionalFields = (forms, theRules = 'inline', isDynamic = false, resetField = true) => {
 
 	forms = typeof forms == "string" ? document.querySelectorAll(forms) : forms;
 	let fields = [], // To hold all available conditional fields
@@ -170,6 +170,10 @@ const mfConditionalFields = (forms, theRules = 'inline', isDynamic = false) => {
 			}
 
 			if (action == 'hide') {
+				// Should be resetted the field?
+				if ( resetField ) {
+					field.value = '';
+				}
 				// Hide the field
 				if (container == '') {
 					field.setAttribute("hidden", true);
