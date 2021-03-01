@@ -94,10 +94,17 @@
             <label for="field1">Type your gender:</label>
             <input type="text" name="dependant_field2_2">
           </div>
+
           <div class="dropdown-divider"></div>
-          <button type="submit" class="btn btn-primary">Submit</button>
-        </div>
-      </div>
+          <h3 class="mb-5">Disabled Field Example</h3>
+          <div class="form-group">
+            <input type="checkbox" name="disable_parent" id="disable_parent" value="yes"> <label for="disable_parent">I
+              agree to enable `submit` button.</label>
+            <div>
+              <div class="dropdown-divider"></div>
+              <button type="submit" name="disable_this" class="btn btn-primary">Submit</button>
+            </div>
+          </div>
     </form>
   </div>
 
@@ -214,6 +221,15 @@
             "name": "gender2",
             "operator": "is",
             "value": "other"
+          }
+        },
+        {
+          "field": "disable_this",
+          "action": "disable",
+          "rules": {
+            "name": "disable_parent",
+            "operator": "isnot",
+            "value": "yes"
           }
         }
       ]

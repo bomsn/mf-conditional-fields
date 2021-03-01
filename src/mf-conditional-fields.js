@@ -140,7 +140,17 @@ const mfConditionalFields = (forms, options = {}) => {
 			if (isConditionMet) {
 				self.toggleField(field, action);
 			} else {
-				action = action == 'hide' ? 'show' : 'hide';
+				if( 'hide' == action  ){
+					action = 'show';
+				}else if('show' == action){
+					action = 'hide';
+				}else if('disable' == action){
+					action = 'enable';
+				}else if('enable' == action){
+					action = 'disable';
+				}else{
+					action = 'none';
+				}
 				self.toggleField(field, action);
 			}
 		},
@@ -183,15 +193,25 @@ const mfConditionalFields = (forms, options = {}) => {
 					field.closest("" + container + "").setAttribute("hidden", true);
 				}
 
-				if( disableHidden ){
+				if (disableHidden) {
 					field.setAttribute("disabled", "disabled");
 				}
-				if( unsetHidden ){
-					if( 'checkbox' == field.type || 'radio' == field.type ){
+				if (unsetHidden) {
+					if ('checkbox' == field.type || 'radio' == field.type) {
 						field.checked = false;
-					}else{
+					} else {
 						field.value = '';
 					}
+				}
+
+			} else if (action == 'disable') {
+
+				field.setAttribute("disabled", "disabled");
+
+			} else if (action == 'enable') {
+
+				if (field.hasAttribute("disabled")) {
+					field.removeAttribute("disabled");
 				}
 
 			} else if (action == 'show') {
@@ -202,7 +222,7 @@ const mfConditionalFields = (forms, options = {}) => {
 					field.closest("" + container + "").removeAttribute("hidden");
 				}
 
-				if( disableHidden ){
+				if (disableHidden) {
 					field.removeAttribute("disabled");
 				}
 			}

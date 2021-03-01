@@ -87,7 +87,7 @@ To give you more control over the conditional elements, `mfConditionalFields` of
     ]
 
 ### Field
-The name attribute of the field you want to show/hide based on the provided rules. Note that this can only be used in the **block based rules**, **inline based rules** don't require this. ( if the bold terms don't make sense yet, please keep reading )
+The name attribute of the field you want to show/hide/enable/disable based on the provided rules. Note that this can only be used in the **block based rules**, **inline based rules** don't require this. ( if the bold terms don't make sense yet, please keep reading )
 
 ### Container
 The conditional field parent element where you want to perform the hiding/showing action, leave empty to show/hide the field itself.
@@ -95,6 +95,8 @@ The conditional field parent element where you want to perform the hiding/showin
 ### Action
   - show
   - hide
+  - enable
+  - disable
 
 ### Logic
 
