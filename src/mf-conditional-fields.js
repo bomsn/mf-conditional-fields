@@ -140,7 +140,7 @@ const mfConditionalFields = (forms, options = {}) => {
 			if (isConditionMet) {
 				self.toggleField(field, action);
 			} else {
-				action = action == 'hide' ? 'show' : 'hide';
+				action = (action == 'disable') ? 'disable' : (action == 'hide') ? 'show' : 'hide';
 				self.toggleField(field, action);
 			}
 		},
@@ -204,6 +204,13 @@ const mfConditionalFields = (forms, options = {}) => {
 
 				if( disableHidden ){
 					field.removeAttribute("disabled");
+				}
+			} else if (action == 'disable') {
+				// Toggle disable on the field
+				if ( field.hasAttribute( 'disabled' ) ) {
+					field.removeAttribute("disabled");
+				} else {
+					field.setAttribute("disabled", true);
 				}
 			}
 
