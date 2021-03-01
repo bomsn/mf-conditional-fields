@@ -95,13 +95,13 @@
             <input type="text" name="dependant_field2_2">
           </div>
           <div class="dropdown-divider"></div>
-          <button type="submit" class="btn btn-primary">Submit</button>
+          <button type="submit" name="daButton" class="btn btn-primary">Submit</button>
         </div>
       </div>
     </form>
   </div>
 
-  <script src="../src/mf-conditional-fields.js"></script>
+  <script src="mf.js"></script>
   <script type="text/x-rules" id="rules-mf-conditional-fields">
     [
     {
@@ -209,6 +209,16 @@
           "field": "dependant_field2_2",
           "container": ".form-group",
           "action": "show",
+          "logic": "or",
+          "rules": {
+            "name": "gender2",
+            "operator": "is",
+            "value": "other"
+          }
+        },
+        {
+          "field": "daButton",
+          "action": "disable",
           "logic": "or",
           "rules": {
             "name": "gender2",
