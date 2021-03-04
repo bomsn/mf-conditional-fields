@@ -97,7 +97,6 @@ const mfConditionalFields = (forms, options = {}) => {
 
 						let trigger = forms[formIndex].querySelectorAll('[name="' + name + '"]'),
 							triggerType, triggerValue, isRuleMet;
-
 						if (trigger.length > 0) {
 							triggerType = trigger[0].type;
 							// Get the first element and assign it a trigger if it's not a radio or checkbox ( there is a possibility to have same name attribute on these )
@@ -112,6 +111,8 @@ const mfConditionalFields = (forms, options = {}) => {
 									if (trigger[i].checked) {
 										triggerValue.push(trigger[i].value);
 									}
+
+									// Convert array to a string in the last loop iteration
 									if (i === trigger.length - 1) {
 										triggerValue = triggerValue.join('|');
 									}
@@ -315,9 +316,7 @@ const mfConditionalFields = (forms, options = {}) => {
 							for (let r = 0; theRules.length > r; r++) {
 								if ("field" in theRules[r]) {
 									let theFields = forms[formIndex].elements[theRules[r]['field']];
-									theFields = (theFields instanceof RadioNodeList)
-										? Array.from(theFields)
-										: [theFields];
+									theFields = (theFields instanceof RadioNodeList) ? Array.from(theFields) : [theFields];
 									for (let f = 0; theFields.length > f; f++) {
 										if (typeof theFields[f] !== "undefined") {
 											let theField = theFields[f];
