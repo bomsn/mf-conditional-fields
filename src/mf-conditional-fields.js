@@ -314,12 +314,18 @@ const mfConditionalFields = (forms, options = {}) => {
 						} else {
 							for (let r = 0; theRules.length > r; r++) {
 								if ("field" in theRules[r]) {
-									let theField = forms[formIndex].elements[theRules[r]['field']];
-									if (typeof theField !== "undefined") {
-										delete theRules[r]['field'];
-										theField.setAttribute("data-conditional-rules", JSON.stringify(theRules[r]));
-										newConditionalFields.push(theField);
+									let theFields = forms[formIndex].elements[theRules[r]['field']];
+									theFields = (theFields instanceof RadioNodeList)
+										? Array.from(theFields)
+										: [theFields];
+									for (let f = 0; theFields.length > f; f++) {
+										if (typeof theFields[f] !== "undefined") {
+											let theField = theFields[f];
+											theField.setAttribute("data-conditional-rules", JSON.stringify(theRules[r]));
+											newConditionalFields.push(theField);
+										}
 									}
+									delete theRules[r]['field'];
 								}
 							}
 							// clean `theRules` variable since we'll not need it anymore
