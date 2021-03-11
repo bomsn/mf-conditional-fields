@@ -6,14 +6,21 @@
  * Author: Ali Khallad
  * Author link: http://alikhallad.com
  * Source : https://github.com/bomsn/mf-conditional-fields
- * Version 1.0.0
+ * Version 1.0.1
  *
  */
 "use strict";
 const mfConditionalFields = (forms, options = {}) => {
 
-	forms = typeof forms == "string" ? document.querySelectorAll(forms) : forms;
-
+	// Ensure the passed form(s) is in the correct format (array of elements)
+	switch(typeof forms){
+		case 'string':
+			forms = document.querySelectorAll(forms);
+			break;
+		case 'object':
+			forms = [forms];
+			break;
+	}
 
 	let theRules = options.rules || 'inline',
 		isDynamic = options.dynamic || false,
@@ -141,15 +148,15 @@ const mfConditionalFields = (forms, options = {}) => {
 			if (isConditionMet) {
 				self.toggleField(field, action);
 			} else {
-				if( 'hide' == action  ){
+				if ('hide' == action) {
 					action = 'show';
-				}else if('show' == action){
+				} else if ('show' == action) {
 					action = 'hide';
-				}else if('disable' == action){
+				} else if ('disable' == action) {
 					action = 'enable';
-				}else if('enable' == action){
+				} else if ('enable' == action) {
 					action = 'disable';
-				}else{
+				} else {
 					action = 'none';
 				}
 				self.toggleField(field, action);
