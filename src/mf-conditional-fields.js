@@ -287,11 +287,6 @@ const mfConditionalFields = (forms, options = {}) => {
 				let trigger = forms[formIndex].querySelectorAll('[name="' + name + '"]'),
 					triggerType, triggerValue, isRuleMet;
 
-				// Make sure to catch multiple checkboxes (workaround)
-				if (trigger.length === 0) {
-					trigger = forms[formIndex].querySelectorAll('[type="checkbox"][name="' + name + '[]"]');
-				}
-
 				if (trigger.length > 0) {
 					triggerType = trigger[0].type;
 					// Get the first element and assign it a trigger if it's not a radio or checkbox ( there is a possibility to have same name attribute on these )
@@ -442,7 +437,37 @@ const mfConditionalFields = (forms, options = {}) => {
 								if (trigger.length === 0) {
 									trigger = forms[formIndex].querySelectorAll('[type="checkbox"][name="' + triggers[formIndex][n] + '[]"]');
 									if (trigger.length > 0) {
+										let oldName = triggers[formIndex][n];
+										// Replace the old name with the new one for the triggers so that the listener can work
 										triggers[formIndex][n] = triggers[formIndex][n] + "[]";
+										// Update all dependant field rules to include the `name` attribute appended with []
+										let dependantFields = self.getDependantField(oldName, formIndex);
+										if (dependantFields.length > 0) {
+											for (let i = 0; dependantFields.length > i; i++) {
+												if (dependantFields[i].mfConditionalRules.length > 0) {
+													let nameUpdated = false;
+													for (let r = 0; dependantFields[i].mfConditionalRules.length > r; r++) {
+														if ("group" in dependantFields[i].mfConditionalRules[r]) {
+															for (let rg = 0; dependantFields[i].mfConditionalRules[r].group.length > rg; rg++) {
+																if (dependantFields[i].mfConditionalRules[r].group[rg].name == oldName) {
+																	dependantFields[i].mfConditionalRules[r].group[rg].name = oldName + "[]";
+																	nameUpdated = true;
+																}
+															}
+														} else {
+															if (dependantFields[i].mfConditionalRules[r].name == oldName) {
+																dependantFields[i].mfConditionalRules[r].name = oldName + "[]";
+																nameUpdated = true;
+															}
+														}
+													}
+													// If the field name attribute was changed, Update the field as a final step.
+													if (nameUpdated) {
+														self.updateField(dependantFields[i]);
+													}
+												}
+											}
+										}
 									}
 								}
 
