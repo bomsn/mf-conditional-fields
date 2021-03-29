@@ -13,7 +13,7 @@
 const mfConditionalFields = (forms, options = {}) => {
 
 	// Ensure the passed form(s) is in the correct format (array of elements)
-	switch(typeof forms){
+	switch (typeof forms) {
 		case 'string':
 			forms = document.querySelectorAll(forms);
 			break;
@@ -55,25 +55,34 @@ const mfConditionalFields = (forms, options = {}) => {
 					rules = [rules];
 				}
 
-				// If rules are available, start a loop to implement each rule
-				if (rules.length > 0) {
-					for (let i = 0; rules.length > i; i++) {
-						if (triggers[formIndex].includes(rules[i].name) === false) {
-							triggers[formIndex].push(rules[i].name);
+					// If rules are available, start a loop to implement each rule
+					if (rules.length > 0) {
+						for (let i = 0; rules.length > i; i++) {
+							if ("group" in rules[i]) {
+								// Store grouped rules triggers
+								for (let r = 0; rules[i].group.length > r; r++) {
+									if ("name" in rules[i].group[r] && !triggers[formIndex].includes(rules[i].group[r].name)) {
+										triggers[formIndex].push(rules[i].group[r].name);
+									}
+								}
+							} else {
+								// Store normal rules triggers
+								if ("name" in rules[i] && !triggers[formIndex].includes(rules[i].name)) {
+									triggers[formIndex].push(rules[i].name);
+								}
+							}
 						}
+
+						field.removeAttribute('data-conditional-rules');
+
+						field.mfConditionalContainerSelector = container;
+						field.mfConditionalAction = action;
+						field.mfConditionalLogic = logic;
+						field.mfConditionalRules = rules;
+						field.mfConditionalFormIndex = formIndex;
+
+						self.updateField(field);
 					}
-
-
-					field.removeAttribute('data-conditional-rules');
-
-					field.mfConditionalContainerSelector = container;
-					field.mfConditionalAction = action;
-					field.mfConditionalLogic = logic;
-					field.mfConditionalRules = rules;
-					field.mfConditionalFormIndex = formIndex;
-
-					self.updateField(field);
-				}
 			}
 
 		},
@@ -84,7 +93,7 @@ const mfConditionalFields = (forms, options = {}) => {
 		 *
 		 * @param field The field object
 		 */
-		updateField: (field) => {
+		 updateField: (field) => {
 
 			let formIndex = field.mfConditionalFormIndex,
 				action = field.mfConditionalAction,
@@ -95,52 +104,40 @@ const mfConditionalFields = (forms, options = {}) => {
 			if (rules.length > 0) {
 
 				for (let i = 0; rules.length > i; i++) {
-					let rule = rules[i],
-						name = rule.name,
-						operator = rule.operator,
-						value = rule.value;
-
-					if (triggers[formIndex].includes(name)) {
-
-						let trigger = forms[formIndex].querySelectorAll('[name="' + name + '"]'),
-							triggerType, triggerValue, isRuleMet;
-						if (trigger.length > 0) {
-							triggerType = trigger[0].type;
-							// Get the first element and assign it a trigger if it's not a radio or checkbox ( there is a possibility to have same name attribute on these )
-							if (triggerType !== 'radio' && triggerType !== 'checkbox') {
-								trigger = trigger[0];
-							}
-							// Get the trigger value(s)
-							if (triggerType == 'radio' || triggerType == 'checkbox') {
-								// Special logic for handling radios and checkboxs since they can have the same name attribute.
-								triggerValue = [];
-								for (let i = 0; i < trigger.length; i++) {
-									if (trigger[i].checked) {
-										triggerValue.push(trigger[i].value);
-									}
-
-									// Convert array to a string in the last loop iteration
-									if (i === trigger.length - 1) {
-										triggerValue = triggerValue.join('|');
-									}
-								}
-							} else {
-								triggerValue = trigger.value;
-							}
-
-							isRuleMet = self.compareValues(operator, triggerValue, value);
-							isConditionMet = isRuleMet;
-
-							// Compare values and check if the conditions are met
-							if (isRuleMet === false && logic == 'and') {
-								isConditionMet = false
+					let isRuleMet = false;
+					if("group" in rules[i]){
+						// Evaluate grouped rules
+						let relation = rules[i].relation || 'and',
+							isGroupRulesMet = false;
+						for (let r = 0; rules[i].group.length > r; r++) {
+							isGroupRulesMet = self.evaluateRule(rules[i].group[r], formIndex);
+							// Break out of this for loop if we have a final decision about this rule ( met or not )
+							if( isGroupRulesMet == false && 'and' == relation ){
+								isRuleMet = false;
 								break;
-							} else if (isRuleMet && logic == 'or') {
-								isConditionMet = true;
+							} else if (isGroupRulesMet && 'or' == relation) {
+								isRuleMet = true;
 								break;
 							}
+
+							isRuleMet = isGroupRulesMet;
 						}
+
+					}else{
+						// Evaluate normal rules
+						isRuleMet = self.evaluateRule(rules[i], formIndex);
 					}
+
+					// Break out of this for loop if we have a final decision about this rule, or rules group ( met or not )
+					if (isRuleMet === false && 'and' == logic) {
+						isConditionMet = false
+						break;
+					} else if (isRuleMet && 'or' == logic) {
+						isConditionMet = true;
+						break;
+					}
+
+					isConditionMet = isRuleMet;
 				}
 
 			}
@@ -242,14 +239,30 @@ const mfConditionalFields = (forms, options = {}) => {
 		 * @param name The name attribute of the trigger field
 		 * @param formIndex The index of the form which holds this trigger
 		 */
-		getDependantField: (name, formIndex) => {
+		 getDependantField: (name, formIndex) => {
 			let dependantFields = [];
-			// Loop through available conditional fields and find any that are using a dependant on a another field based on name attribute of the latter
+			// Loop through available conditional fields and find any that are using a dependant on another field based on name attribute of the latter
 			if (typeof fields[formIndex] !== "undefined") {
 				for (let i = 0; fields[formIndex].length > i; i++) {
 					// Only update the conditional fields associated with this trigger field
 					if ("mfConditionalRules" in fields[formIndex][i]) {
-						if (typeof (fields[formIndex][i]["mfConditionalRules"].find(rule => { return rule.name === name })) !== "undefined") {
+						// Run a test to see if this field is dependant on the field with the supplied `name` attribute
+						let isDependant = fields[formIndex][i]["mfConditionalRules"].some((rule) => {
+							if( "group" in rule){
+								// Handle grouped rules
+								for(let r = 0; rule.group.length > r; r++){
+									if(rule.group[r].name === name){
+										return true;
+									}
+								}
+								return false;
+							}else{
+								// Handle normal rules
+								return rule.name === name
+							}
+						});
+						
+						if (typeof (isDependant) !== "undefined") {
 							dependantFields.push(fields[formIndex][i]);
 						}
 					}
