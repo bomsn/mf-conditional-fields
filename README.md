@@ -108,7 +108,7 @@ The conditional field parent element where you want to perform the hiding/showin
 ### Rules
 This should contain the rules you want to meet before showing/hiding the field. The rules can accept one rule in simple format `{"name": "a", "operator": "is", "value": "yes"}` or multiple rules `[{"name": "a", "operator": "is", "value": "yes"}, {"name": "b", "operator": "is", "value": "no"}]`
 
-**Note:** grouped rules are also supported, if you need to create complex conditions, just store them as set of groups in the dependant field rules. Here is a sample of rule groups:
+**Note:** grouped rules are also supported, if you need to create complex conditions, just store them as set of groups in the dependant field rules. Here is a sample of groups:
 
     [
         {
@@ -120,41 +120,41 @@ This should contain the rules you want to meet before showing/hiding the field. 
                 {
                     "relation":"and",
                     "group":[
-                    {
-                        "name":"ruling_field1",
-                        "operator":"is",
-                        "value":"One"
-                    },
-                    {
-                        "name":"ruling_field2",
-                        "operator":"is",
-                        "value":"Two"
-                    }
+                        {
+                            "name":"ruling_field1",
+                            "operator":"is",
+                            "value":"One"
+                        },
+                        {
+                            "name":"ruling_field2",
+                            "operator":"is",
+                            "value":"Two"
+                        }
                     ]
                 },
                 {
                     "relation":"and",
                     "group":[
-                    {
-                        "name":"ruling_field3",
-                        "operator":"b",
-                        "value":"One"
-                    },
-                    {
-                        "name":"ruling_field4",
-                        "operator":"is",
-                        "value":"Two"
-                    }
+                        {
+                            "name":"ruling_field3",
+                            "operator":"b",
+                            "value":"One"
+                        },
+                        {
+                            "name":"ruling_field4",
+                            "operator":"is",
+                            "value":"Two"
+                        }
                     ]
                 },
                 {
                     "relation":"and",
                     "group":[
-                    {
-                        "name":"ruling_field5",
-                        "operator":"is",
-                        "value":"None of the above"
-                    }
+                        {
+                            "name":"ruling_field5",
+                            "operator":"is",
+                            "value":"None of the above"
+                        }
                     ]
                 }
             ]
