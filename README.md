@@ -7,7 +7,7 @@ A JavaScript library that show/hide form elements based on the value of one fiel
 **Advantages**
 - Lightweight & fast.
 - Comes with a number of different operators.
-- Supports complex conditional rules.
+- Supports complex conditional rules ( simple as well as grouped rules).
 - Supports dynamic forms ( forms that are updated with new elements after the DOM is loaded ).
 - Supports all form elements regardless of their type ( input, select..etc ).
 
