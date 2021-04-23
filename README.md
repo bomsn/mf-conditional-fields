@@ -39,6 +39,8 @@ To give you more control over the conditional elements, `mfConditionalFields` of
       dynamic: false, // If set to `true` the library will handle elements added after the DOM is loaded ( see below for examples ).
       unsetHidden: false, // If set to `true` the library will unset the value of any hidden fields.
       disableHidden: false, // If set to `true`, any hidden fields will be set to `disabled`.
+      debug: false, // If set to `true` the library will show hints in the console when things aren't working as expected.
+      depth: 3 // This allows you to set how deep should the library go in showing/hiding dependent fields.
     });
 
 ### Inline Based Rules
@@ -100,11 +102,64 @@ The conditional field parent element where you want to perform the hiding/showin
 
 ### Logic
 
-  - or ( ***meeting one of the rules is enough perform the action*** )
+  - or ( ***meeting one of the rules is enough to perform the action*** )
   - and ( ***all the rules must be met to perform the action*** )
 
 ### Rules
 This should contain the rules you want to meet before showing/hiding the field. The rules can accept one rule in simple format `{"name": "a", "operator": "is", "value": "yes"}` or multiple rules `[{"name": "a", "operator": "is", "value": "yes"}, {"name": "b", "operator": "is", "value": "no"}]`
+
+**Note:** grouped rules are also supported, if you need to create complex conditions, just store them as set of groups in the dependant field rules. Here is a sample of rule groups:
+
+    [
+        {
+            "field":"dependant_field",
+            "container":".field_container",
+            "action":"show",
+            "logic":"or",
+            "rules":[
+                {
+                    "relation":"and",
+                    "group":[
+                    {
+                        "name":"ruling_field1",
+                        "operator":"is",
+                        "value":"One"
+                    },
+                    {
+                        "name":"ruling_field2",
+                        "operator":"is",
+                        "value":"Two"
+                    }
+                    ]
+                },
+                {
+                    "relation":"and",
+                    "group":[
+                    {
+                        "name":"ruling_field3",
+                        "operator":"b",
+                        "value":"One"
+                    },
+                    {
+                        "name":"ruling_field4",
+                        "operator":"is",
+                        "value":"Two"
+                    }
+                    ]
+                },
+                {
+                    "relation":"and",
+                    "group":[
+                    {
+                        "name":"ruling_field5",
+                        "operator":"is",
+                        "value":"None of the above"
+                    }
+                    ]
+                }
+            ]
+        }
+    ]
 
 #### Name
 The name attribute of the parent field where the script should be listening for changes
