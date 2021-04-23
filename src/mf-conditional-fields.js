@@ -6,7 +6,7 @@
  * Author: Ali Khallad
  * Author link: http://alikhallad.com
  * Source : https://github.com/bomsn/mf-conditional-fields
- * Version 1.0.1
+ * Version 1.0.2
  *
  */
 "use strict";
@@ -18,7 +18,19 @@ const mfConditionalFields = (forms, options = {}) => {
 			forms = document.querySelectorAll(forms);
 			break;
 		case 'object':
-			forms = [forms];
+			// Check if this is an object of objects 
+			// ( special logic to handle the form elements provided by jQuery )
+
+			if (Array.isArray(forms) === false && Object.prototype.hasOwnProperty.call(forms, "0")) {
+				// Clean the object, make sure it only hold HTML FORM elements
+				forms = Object.fromEntries(Object.entries(forms).filter(([key, val]) => {
+					return !isNaN(key) && typeof val.elements !== "undefined";
+				}))
+				// Keep object values only ( this will convert our object to array )
+				forms = Object.values(forms);
+			} else {
+				forms = Array.isArray(forms) ? forms : [forms];
+			}
 			break;
 	}
 
@@ -26,6 +38,8 @@ const mfConditionalFields = (forms, options = {}) => {
 		isDynamic = options.dynamic || false,
 		unsetHidden = options.unsetHidden || false,
 		disableHidden = options.disableHidden || false,
+		debug = options.debug || false,
+		depth = options.depth || 3,
 		fields = [], // To hold all available conditional fields
 		triggers = [], // To hold every trigger field
 		triggersListening = []; // To hold every trigger that has an eventlistener attached to it;
@@ -93,7 +107,7 @@ const mfConditionalFields = (forms, options = {}) => {
 		 *
 		 * @param field The field object
 		 */
-		updateField: (field) => {
+		updateField: (field, depthLevel = 1) => {
 
 			let formIndex = field.mfConditionalFormIndex,
 				action = field.mfConditionalAction,
@@ -143,7 +157,7 @@ const mfConditionalFields = (forms, options = {}) => {
 			}
 			// Toggle the fields based on the value of `isConditionMet`
 			if (isConditionMet) {
-				self.toggleField(field, action);
+				self.toggleField(field, action, depthLevel);
 			} else {
 				if ('hide' == action) {
 					action = 'show';
@@ -156,7 +170,7 @@ const mfConditionalFields = (forms, options = {}) => {
 				} else {
 					action = 'none';
 				}
-				self.toggleField(field, action);
+				self.toggleField(field, action, depthLevel);
 			}
 		},
 		/**
@@ -167,24 +181,26 @@ const mfConditionalFields = (forms, options = {}) => {
 		 * @param field The field object
 		 * @param action The action to perform ( show/hide )
 		 */
-		toggleField: (field, action) => {
+		toggleField: (field, action, depthLevel) => {
 
 			let formIndex = field.mfConditionalFormIndex,
 				name = field.name,
 				container = field.mfConditionalContainerSelector;
 
 			// Check if this field is a trigger and re-evaluate dependant fields recursively
-			if (triggers[formIndex].includes(name)) {
-				let dependantFields = self.getDependantField(name, formIndex);
-
-				if (dependantFields.length > 0) {
-					for (let i = 0; dependantFields.length > i; i++) {
-						if (action == 'hide') {
-							// If we are hiding this field, make sure any conditional field associated are hidden as well
-							self.toggleField(dependantFields[i], 'hide');
-						} else if (action == 'show') {
-							/// If we are showing this field, make sure any conditional field associated are re-evaluated
-							self.updateField(dependantFields[i]);
+			// Ensure we don't go too deep to avoid memory leak
+			if( depthLevel < depth ){
+				if (triggers[formIndex].includes(name)) {
+					let dependantFields = self.getDependantField(name, formIndex);
+					if (dependantFields.length > 0) {
+						for (let i = 0; dependantFields.length > i; i++) {
+							if (action == 'hide') {
+								// If we are hiding this field, make sure any conditional field associated are hidden as well
+								self.toggleField(dependantFields[i], 'hide', depthLevel++);
+							} else if (action == 'show') {
+								/// If we are showing this field, make sure any conditional field associated are re-evaluated
+								self.updateField(dependantFields[i], depthLevel++);
+							}
 						}
 					}
 				}
@@ -262,7 +278,7 @@ const mfConditionalFields = (forms, options = {}) => {
 							}
 						});
 
-						if (typeof (isDependant) !== "undefined") {
+						if (typeof (isDependant) !== "undefined" && isDependant !== false) {
 							dependantFields.push(fields[formIndex][i]);
 						}
 					}
@@ -490,11 +506,14 @@ const mfConditionalFields = (forms, options = {}) => {
 					return true;
 
 				} catch (err) {
-					let prefix = 'formIndex: ' + formIndex;
-					if (typeof forms[formIndex].getAttribute('id') !== undefined) {
-						prefix = 'formId: ' + forms[formIndex].getAttribute('id');
+					if (debug) {
+						let prefix = 'formIndex: ' + formIndex;
+						if (typeof forms[formIndex].getAttribute('id') !== "undefined") {
+							prefix = 'formId: ' + forms[formIndex].getAttribute('id');
+						}
+						console.info(`${prefix} => ${err}`);
 					}
-					console.info(`${prefix} => ${err}`);
+
 					return false;
 				}
 			} else if (action == 'remove') {
@@ -551,13 +570,17 @@ const mfConditionalFields = (forms, options = {}) => {
 		if (typeof blockRules !== undefined) {
 			theRules = JSON.parse(blockRules.innerHTML);
 		} else {
-			console.warn(`The rules element could not be found.`);
+			if (debug) {
+				console.warn(`The rules element could not be found.`);
+			}
 			return false;
 		}
 	}
 
 	if (theRules !== 'inline' && typeof theRules !== "object") {
-		console.warn(`The supplied rules or rule type is not valid.`);
+		if (debug) {
+			console.warn(`The supplied rules or rule type is not valid.`);
+		}
 		return false;
 	}
 
@@ -587,7 +610,9 @@ const mfConditionalFields = (forms, options = {}) => {
 		}
 
 	} else {
-		console.warn(`The supplied conditional form was not found`);
+		if (debug) {
+			console.warn(`The supplied conditional form was not found`);
+		}
 		return false;
 	}
 }
