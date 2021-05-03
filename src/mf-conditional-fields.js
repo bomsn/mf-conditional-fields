@@ -6,7 +6,7 @@
  * Author: Ali Khallad
  * Author link: http://alikhallad.com
  * Source : https://github.com/bomsn/mf-conditional-fields
- * Version 1.0.2
+ * Version 1.0.3
  *
  */
 "use strict";
@@ -185,11 +185,12 @@ const mfConditionalFields = (forms, options = {}) => {
 
 			let formIndex = field.mfConditionalFormIndex,
 				name = field.name,
-				container = field.mfConditionalContainerSelector;
+				containerSelector = field.mfConditionalContainerSelector,
+				container = null;
 
 			// Check if this field is a trigger and re-evaluate dependant fields recursively
 			// Ensure we don't go too deep to avoid memory leak
-			if( depthLevel < depth ){
+			if (depthLevel < depth) {
 				if (triggers[formIndex].includes(name)) {
 					let dependantFields = self.getDependantField(name, formIndex);
 					if (dependantFields.length > 0) {
@@ -208,10 +209,13 @@ const mfConditionalFields = (forms, options = {}) => {
 
 			if (action == 'hide') {
 				// Hide the field
-				if (container == '') {
+				if (containerSelector == '') {
 					field.setAttribute("hidden", true);
 				} else {
-					field.closest("" + container + "").setAttribute("hidden", true);
+					container = field.closest("" + containerSelector + "");
+					if (container) {
+						container.setAttribute("hidden", true);
+					}
 				}
 
 				if (disableHidden) {
@@ -237,10 +241,13 @@ const mfConditionalFields = (forms, options = {}) => {
 
 			} else if (action == 'show') {
 				// Show the field
-				if (container == '') {
+				if (containerSelector == '') {
 					field.removeAttribute("hidden");
 				} else {
-					field.closest("" + container + "").removeAttribute("hidden");
+					container = field.closest("" + containerSelector + "");
+					if (container) {
+						container.removeAttribute("hidden");
+					}
 				}
 
 				if (disableHidden) {
