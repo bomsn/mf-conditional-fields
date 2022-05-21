@@ -125,7 +125,7 @@ function get_mf_conditional_rules( $action, $rules, $logic = 'or', $container = 
           </form>
         </form>
       </div>
-      <script src="../src/mf-conditional-fields.js"></script>
+      <script src="../dist/mf-conditional-fields.min.js"></script>
       <script>
         mfConditionalFields('#example_form');
       </script>

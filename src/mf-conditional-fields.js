@@ -200,7 +200,7 @@ const mfConditionalFields = (forms, options = {}) => {
 								self.toggleField(dependantFields[i], 'hide', depthLevel++);
 							} else if (action == 'show') {
 								/// If we are showing this field, make sure any conditional field associated are re-evaluated
-								self.updateField(dependantFields[i], depthLevel++);
+								self.updateField(dependantFields[i], 'show', depthLevel++);
 							}
 						}
 					}

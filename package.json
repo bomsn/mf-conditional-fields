@@ -1,0 +1,11 @@
+{
+  "name": "mf-conditional-fields",
+  "version": "1.0.0",
+  "description": "MF Conditional Fields: A JavaScript library that show/hide form elements based on the value of one field or many.",
+  "devDependencies": {
+    "eslint": "^8.14.0",
+    "grunt": "^1.5.2",
+    "grunt-contrib-uglify": "^5.2.1",
+    "grunt-contrib-watch": "^1.1.0"
+  }
+}

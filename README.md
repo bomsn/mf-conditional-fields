@@ -2,7 +2,7 @@
 
 A JavaScript library that show/hide form elements based on the value of one field or many.
 
-![MF Conditional Fields](/images/mf-conditional-rules.gif)
+![MF Conditional Fields](/examples/images/mf-conditional-rules.gif)
 
 **Advantages**
 - Lightweight & fast.
@@ -24,7 +24,7 @@ If you want to use jQuery, you'll need to write your own function or plugin to s
 
 ## How To Use
 
-1. Load `src/mf-conditional-fields.js`.
+1. Load `dist/mf-conditional-fields.min.js`.
 2. Add your JSON formatted conditions inside a [JS element](#plain-html-usage--block-based-rules-) or to the field you want to show/hide inside a `data-conditional-rules` attribute.
 3. Call `mfConditionalFields('form')`  *(replace `form` with your form selector)*
 
@@ -231,7 +231,7 @@ _________________________________________
 - Load the library and Initialize conditional fields
 
         ?>
-          <script src="../src/mf-conditional-fields.js"></script>
+          <script src="../dist/mf-conditional-fields.min.js"></script>
           <script>
             mfConditionalFields('#example_form');
           </script>
@@ -283,7 +283,7 @@ _________________________________________
 
 - Load the library and Initialize conditional fields ( make sure to pass an object with `rules` property set to `block` as a second arguement when calling `mfConditionalFields` )
 
-      <script src="../src/mf-conditional-fields.js"></script>
+      <script src="../dist/mf-conditional-fields.min.js"></script>
       <script>
         mfConditionalFields('#example_form', {rules: 'block'});
       </script>
@@ -301,6 +301,13 @@ Then, you must trigger the event `mfConditionalFormUpdated` each time you add or
 
     let mfEvent = new CustomEvent("mfConditionalFormUpdated", { "detail": { "action": "add" } });
     document.getElementById('example_form').dispatchEvent(mfEvent);
+
+_____________________________________________
+
+### Making changes ( development )
+Want to make changes to the source code? Simply install dependencies using `npm install` and watch for changes using the command `grunt watch`.
+
+Once the command `grunt watch` is executed, you can start making changes to `/src/mf-conditional-fields.js` and the file will be automatically minified and exported to `/dist/mf-conditional-fields.min.js`.
 
 _____________________________________________
 
