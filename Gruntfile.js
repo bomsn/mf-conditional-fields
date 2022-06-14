@@ -1,5 +1,6 @@
 module.exports = function (grunt) {
 
+    var prod = grunt.option('build') === 'production';
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         // General options
@@ -13,11 +14,18 @@ module.exports = function (grunt) {
             dist: 'dist',
         },
 
+        // Remove previously minified files & any related temp files
+        clean: {
+            js: [
+                '<%= dirs.dist %>/*.js',
+                '<%= dirs.dist %>/*.map',
+            ]
+        },
         // Minify JavaScript
         uglify: {
             options: {
-                sourceMap: true,
-                sourceMapIncludeSources: true,
+                sourceMap: !prod,
+                sourceMapIncludeSources: !prod,
                 banner: '/* (c) <%= grunt.template.today("yyyy") %> <%= opts.project %> - <%= opts.website %> */\n',
                 report: 'min',
                 compress: {
@@ -44,14 +52,14 @@ module.exports = function (grunt) {
         },
     });
 
+    grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
 
     // Uglify task
-    grunt.registerTask('js', ['uglify']);
+    grunt.registerTask('js', ['clean', 'uglify']);
+
     // Register Default tasks.
-    grunt.registerTask('default', [
-        'js'
-    ]);
+    grunt.registerTask('default', ['js']);
 
 };

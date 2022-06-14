@@ -6,7 +6,7 @@
  * Author: Ali Khallad
  * Author link: http://alikhallad.com
  * Source : https://github.com/bomsn/mf-conditional-fields
- * Version 1.0.3
+ * Version 1.0.4
  *
  */
 "use strict";
@@ -359,9 +359,9 @@ const mfConditionalFields = (forms, options = {}) => {
 				case "isnot":
 					return targetVal !== searchVal;
 				case "greaterthan":
-					return isNaN(targetVal) || isNaN(searchVal) ? false : Number(targetVal) > Number(searchVal);
+					return isNaN(searchVal) || isNaN(targetVal) ? false : Number(searchVal) > Number(targetVal);
 				case "lessthan":
-					return isNaN(targetVal) || isNaN(searchVal) ? false : Number(targetVal) < Number(searchVal);
+					return isNaN(searchVal) || isNaN(targetVal) ? false : Number(searchVal) < Number(targetVal);
 				case "contains":
 					return searchVal.includes(targetVal);
 				case "doesnotcontain":
