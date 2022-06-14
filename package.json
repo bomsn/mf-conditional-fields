@@ -4,6 +4,7 @@
   "description": "MF Conditional Fields: A JavaScript library that show/hide form elements based on the value of one field or many.",
   "scripts": {
     "dev": "grunt",
+    "watch": "grunt watch",
     "build": "grunt --build=production"
   },
   "devDependencies": {

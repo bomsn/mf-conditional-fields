@@ -305,9 +305,11 @@ Then, you must trigger the event `mfConditionalFormUpdated` each time you add or
 _____________________________________________
 
 ### Making changes ( development )
-Want to make changes to the source code? Simply install dependencies using `npm install` and watch for changes using the command `grunt watch`.
+Want to make changes to the source code? Simply install dependencies using `npm install` and watch for changes using the command `npm run watch`.
 
-Once the command `grunt watch` is executed, you can start making changes to `/src/mf-conditional-fields.js` and the file will be automatically minified and exported to `/dist/mf-conditional-fields.min.js`.
+Once the command `npm run watch` is executed, you can start making changes to `/src/mf-conditional-fields.js` and the file will be automatically minified and exported to `/dist/mf-conditional-fields.min.js`.
+
+Once done and you want to generat a clean minified version ( without source mapping ), run `npm run build`.
 
 _____________________________________________
 
