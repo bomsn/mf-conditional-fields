@@ -6,7 +6,7 @@
  * Author: Ali Khallad
  * Author link: http://alikhallad.com
  * Source : https://github.com/bomsn/mf-conditional-fields
- * Version 1.0.4
+ * Version 1.0.5
  *
  */
 "use strict";
@@ -106,6 +106,7 @@ const mfConditionalFields = (forms, options = {}) => {
 		 * with the targeted values, and display or hide the field if there is a match
 		 *
 		 * @param field The field object
+		 * @param depthLevel The current depth of the field ( in relation to parent )
 		 */
 		updateField: (field, depthLevel = 1) => {
 
@@ -180,6 +181,7 @@ const mfConditionalFields = (forms, options = {}) => {
 		 *
 		 * @param field The field object
 		 * @param action The action to perform ( show/hide )
+		 * @param depthLevel The current depth of the field ( in relation to parent )
 		 */
 		toggleField: (field, action, depthLevel) => {
 
@@ -197,10 +199,10 @@ const mfConditionalFields = (forms, options = {}) => {
 						for (let i = 0; dependantFields.length > i; i++) {
 							if (action == 'hide') {
 								// If we are hiding this field, make sure any conditional field associated are hidden as well
-								self.toggleField(dependantFields[i], 'hide', depthLevel++);
+								self.toggleField(dependantFields[i], 'hide', ++depthLevel);
 							} else if (action == 'show') {
 								/// If we are showing this field, make sure any conditional field associated are re-evaluated
-								self.updateField(dependantFields[i], 'show', depthLevel++);
+								self.updateField(dependantFields[i], ++depthLevel);
 							}
 						}
 					}
