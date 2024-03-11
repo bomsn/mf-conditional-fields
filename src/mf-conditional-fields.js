@@ -6,7 +6,7 @@
  * Author: Ali Khallad
  * Author link: http://alikhallad.com
  * Source : https://github.com/bomsn/mf-conditional-fields
- * Version 1.0.5
+ * Version 1.0.6
  *
  */
 "use strict";
@@ -116,6 +116,7 @@ const mfConditionalFields = (forms, options = {}) => {
 				rules = field.mfConditionalRules,
 				isConditionMet = false;
 
+
 			if (rules.length > 0) {
 
 				for (let i = 0; rules.length > i; i++) {
@@ -197,10 +198,11 @@ const mfConditionalFields = (forms, options = {}) => {
 					let dependantFields = self.getDependantField(name, formIndex);
 					if (dependantFields.length > 0) {
 						for (let i = 0; dependantFields.length > i; i++) {
-							if (action == 'hide') {
+							let dependantFieldAction = dependantFields[i].mfConditionalAction
+							if (action == 'hide' && dependantFieldAction !== 'disable' && dependantFieldAction !== 'enable') {
 								// If we are hiding this field, make sure any conditional field associated are hidden as well
 								self.toggleField(dependantFields[i], 'hide', ++depthLevel);
-							} else if (action == 'show') {
+							} else {
 								/// If we are showing this field, make sure any conditional field associated are re-evaluated
 								self.updateField(dependantFields[i], ++depthLevel);
 							}
