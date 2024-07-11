@@ -6,7 +6,7 @@
  * Author: Ali Khallad
  * Author link: http://alikhallad.com
  * Source : https://github.com/bomsn/mf-conditional-fields
- * Version 1.0.6
+ * Version 1.0.7
  *
  */
 "use strict";
@@ -334,6 +334,14 @@ const mfConditionalFields = (forms, options = {}) => {
 								triggerValue = triggerValue.join('|');
 							}
 						}
+					} else if (triggerType == 'select-multiple') {
+						triggerValue = [];
+						for (let i = 0; i < trigger.options.length; i++) {
+							if (trigger.options[i].selected) {
+								triggerValue.push(trigger.options[i].value);
+							}
+						}
+						triggerValue = triggerValue.join('|');
 					} else {
 						triggerValue = trigger.value;
 					}
