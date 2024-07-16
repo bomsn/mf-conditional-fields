@@ -1,5 +1,7 @@
 # MF Conditional Fields
 
+[![npm version](https://img.shields.io/npm/v/mf-conditional-fields.svg)](https://www.npmjs.com/package/mf-conditional-fields)
+
 A JavaScript library that show/hide form elements based on the value of one field or many.
 
 ![MF Conditional Fields](/examples/images/mf-conditional-rules.gif)
