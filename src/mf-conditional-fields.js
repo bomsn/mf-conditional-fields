@@ -641,3 +641,5 @@ if (typeof (window) !== 'undefined') {
 	window.mfConditionalFields = mfConditionalFields;
 
 }
+
+export default mfConditionalFields;
