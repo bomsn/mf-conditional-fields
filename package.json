@@ -1,6 +1,6 @@
 {
   "name": "mf-conditional-fields",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "author": "Ali Khallad <info@wpali.com>",
   "keywords": [
     "form",
@@ -10,13 +10,13 @@
   ],
   "license": "GPL-3.0",
   "description": "MF Conditional Fields: A JavaScript library that show/hide form elements based on the value of one field or many.",
-  "main": "dist/mf-conditional-fields.min.js",
+  "main": "dist/mf-conditional-fields.module.min.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/bomsn/mf-conditional-fields"
   },
   "files": [
-    "dist/mf-conditional-fields.min.js"
+    "dist/mf-conditional-fields.module.min.js"
   ],
   "scripts": {
     "dev": "grunt",
