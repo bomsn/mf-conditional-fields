@@ -1,6 +1,6 @@
 {
   "name": "mf-conditional-fields",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "author": "Ali Khallad <info@wpali.com>",
   "keywords": [
     "form",
@@ -18,7 +18,7 @@
   },
   "files": [
     "dist/mf-conditional-fields.module.min.js",
-    "dist/types.min.d.ts"
+    "dist/types.d.ts"
   ],
   "scripts": {
     "dev": "grunt",
