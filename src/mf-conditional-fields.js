@@ -635,9 +635,3 @@ const mfConditionalFields = (forms, options = {}) => {
 		return false;
 	}
 }
-
-if (typeof (window) !== 'undefined') {
-	// Set megaForms as a browser global
-	window.mfConditionalFields = mfConditionalFields;
-
-}
