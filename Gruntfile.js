@@ -37,6 +37,11 @@ module.exports = function (grunt) {
                 files: {
                     '<%= dirs.dist %>/mf-conditional-fields.min.js': [
                         '<%= dirs.src %>/mf-conditional-fields.js',
+                        '<%= dirs.src %>/script.js',
+                    ],
+                    '<%= dirs.dist %>/mf-conditional-fields.module.min.js': [
+                        '<%= dirs.src %>/mf-conditional-fields.js',
+                        '<%= dirs.src %>/module.js',
                     ],
                 },
             }
