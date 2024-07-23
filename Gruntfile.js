@@ -21,6 +21,14 @@ module.exports = function (grunt) {
                 '<%= dirs.dist %>/*.map',
             ]
         },
+        // Copy type declaration files
+        copy: {
+            main: {
+                files: [
+                    { expand: true, src: ['<%= dirs.src %>/types.d.ts'], dest: '<%= dirs.dist %>/', flatten: true }
+                ]
+            }
+        },
         // Minify JavaScript
         uglify: {
             options: {
@@ -42,7 +50,7 @@ module.exports = function (grunt) {
                     '<%= dirs.dist %>/mf-conditional-fields.module.min.js': [
                         '<%= dirs.src %>/mf-conditional-fields.js',
                         '<%= dirs.src %>/module.js',
-                    ],
+                    ]
                 },
             }
         },
@@ -59,10 +67,11 @@ module.exports = function (grunt) {
 
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-watch');
 
     // Uglify task
-    grunt.registerTask('js', ['clean', 'uglify']);
+    grunt.registerTask('js', ['clean', 'copy', 'uglify']);
 
     // Register Default tasks.
     grunt.registerTask('default', ['js']);
