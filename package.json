@@ -1,6 +1,6 @@
 {
   "name": "mf-conditional-fields",
-  "version": "1.0.5",
+  "version": "1.0.7",
   "author": "Ali Khallad <info@wpali.com>",
   "keywords": [
     "form",
@@ -13,7 +13,7 @@
   "main": "dist/mf-conditional-fields.module.min.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/bomsn/mf-conditional-fields"
+    "url": "git+https://github.com/bomsn/mf-conditional-fields.git"
   },
   "files": [
     "dist/mf-conditional-fields.module.min.js"
