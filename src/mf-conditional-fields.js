@@ -320,18 +320,14 @@ const mfConditionalFields = (forms, options = {}) => {
 					if (triggerType !== 'radio' && triggerType !== 'checkbox') {
 						trigger = trigger[0];
 					}
-					// Get the trigger value(s)
+					// Get the trigger value(s). Multi-value inputs keep their array shape so the rule
+					// can be applied to each selected value rather than to one concatenated string.
 					if (triggerType == 'radio' || triggerType == 'checkbox') {
 						// Special logic for handling radios and checkboxs since they can have the same name attribute.
 						triggerValue = [];
 						for (let i = 0; i < trigger.length; i++) {
 							if (trigger[i].checked) {
 								triggerValue.push(trigger[i].value);
-							}
-
-							// Convert array to a string in the last loop iteration
-							if (i === trigger.length - 1) {
-								triggerValue = triggerValue.join('|');
 							}
 						}
 					} else if (triggerType == 'select-multiple') {
@@ -341,7 +337,6 @@ const mfConditionalFields = (forms, options = {}) => {
 								triggerValue.push(trigger.options[i].value);
 							}
 						}
-						triggerValue = triggerValue.join('|');
 					} else {
 						triggerValue = trigger.value;
 					}
@@ -354,40 +349,80 @@ const mfConditionalFields = (forms, options = {}) => {
 			return false;
 		},
 		/**
-		 * Compare provided strings and return true if there is a match, return false otherwise.
+		 * Compare the submitted value against the rule value and return true if the rule is met.
+		 *
+		 * Multi-value inputs (checkboxes, multi-selects) arrive as an array, so the rule is applied
+		 * to each selected value rather than to the array as a whole. Affirmative operators match
+		 * when any one value satisfies them. Negative operators (isnot, doesnotcontain, ...) match
+		 * only when no value satisfies their affirmative counterpart, so "is not X" holds when X is
+		 * absent from the selection rather than merely differing from one of the values.
 		 *
 		 * @param operator The opetrator to use for comparision
-		 * @param searchVal the string to compare
+		 * @param searchVal the submitted value, a string or an array of strings
 		 * @param targetVal the string to compare against
 		 */
 		compareValues: (operator, searchVal, targetVal) => {
 
-			searchVal = searchVal ? searchVal.toString().toLowerCase() : "",
-				targetVal = targetVal ? targetVal.toString().toLowerCase() : "";
+			// Negative operators are resolved by testing their affirmative counterpart and
+			// inverting the result, so a single comparison routine covers both directions.
+			const negatedOperators = {
+				isnot: "is",
+				doesnotcontain: "contains",
+				doesnotbeginwith: "beginswith",
+				doesnotendwith: "endswith",
+			};
+
+			let searchVals = (Array.isArray(searchVal) ? searchVal : [searchVal])
+				.filter(val => val !== null && val !== undefined && val.toString() !== "");
+
+			// 'isempty' is only true when nothing at all was submitted.
+			if (operator === "isempty") {
+				return searchVals.length === 0;
+			}
+
+			// An unanswered field still has to be compared, not skipped: a rule such as "is" with
+			// a blank value is met by an empty field. Standing in a single empty string keeps
+			// every operator working on a value instead of on an empty list.
+			if (searchVals.length === 0) {
+				searchVals = [""];
+			}
+
+			if (operator in negatedOperators) {
+				return !searchVals.some(val => self.compareSingleValue(negatedOperators[operator], val, targetVal));
+			}
+
+			return searchVals.some(val => self.compareSingleValue(operator, val, targetVal));
+		},
+		/**
+		 * Apply one operator to one value. Multi-value and negation handling belong to
+		 * compareValues, so only the affirmative operators are answered here.
+		 *
+		 * @param operator The opetrator to use for comparision
+		 * @param searchVal a single submitted value
+		 * @param targetVal the string to compare against
+		 */
+		compareSingleValue: (operator, searchVal, targetVal) => {
+
+			// Test for null/undefined rather than truthiness so a submitted 0 survives the cast.
+			searchVal = (searchVal === null || searchVal === undefined) ? "" : searchVal.toString().toLowerCase(),
+				targetVal = (targetVal === null || targetVal === undefined) ? "" : targetVal.toString().toLowerCase();
+
+			// An empty string passes isNaN() and would compare as 0, so reject it before comparing.
+			const isNumeric = val => val !== "" && !isNaN(val);
 
 			switch (operator) {
 				case "is":
 					return targetVal === searchVal;
-				case "isnot":
-					return targetVal !== searchVal;
 				case "greaterthan":
-					return isNaN(searchVal) || isNaN(targetVal) ? false : Number(searchVal) > Number(targetVal);
+					return isNumeric(searchVal) && isNumeric(targetVal) ? Number(searchVal) > Number(targetVal) : false;
 				case "lessthan":
-					return isNaN(searchVal) || isNaN(targetVal) ? false : Number(searchVal) < Number(targetVal);
+					return isNumeric(searchVal) && isNumeric(targetVal) ? Number(searchVal) < Number(targetVal) : false;
 				case "contains":
 					return searchVal.includes(targetVal);
-				case "doesnotcontain":
-					return !searchVal.includes(targetVal);
 				case "beginswith":
 					return searchVal.startsWith(targetVal);
-				case "doesnotbeginwith":
-					return !searchVal.startsWith(targetVal);
 				case "endswith":
 					return searchVal.endsWith(targetVal);
-				case "doesnotendwith":
-					return !searchVal.endsWith(targetVal);
-				case "isempty":
-					return searchVal === "";
 				case "isnotempty":
 					return searchVal !== "";
 			}
